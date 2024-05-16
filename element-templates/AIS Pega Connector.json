@@ -1,0 +1,161 @@
+{
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+  "name": "AIS Pega Connector",
+  "id": "ba36a144-22d6-4b22-8ce5-846df55c13d3",
+  "version": 1715762060626,
+  "appliesTo": [
+    "bpmn:ServiceTask"
+  ],
+  "groups": [
+    {
+      "id": "authentication",
+      "label": "Authentication"
+    },
+    {
+      "id": "input",
+      "label": "Input"
+    },
+    {
+      "id": "output",
+      "label": "Output"
+    },
+    {
+      "id": "errors",
+      "label": "Error handling"
+    }
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "io.camunda:pega-inspection:1",
+      "binding": {
+        "type": "zeebe:taskDefinition:type"
+      }
+    },
+    {
+      "label": "Username",
+      "group": "authentication",
+      "type": "String",
+      "feel": "optional",
+      "optional": false,
+      "binding": {
+        "type": "zeebe:input",
+        "name": "username"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Password",
+      "group": "authentication",
+      "type": "String",
+      "feel": "optional",
+      "optional": false,
+      "binding": {
+        "type": "zeebe:input",
+        "name": "password"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Method Type",
+      "group": "input",
+      "value": "POST",
+      "type": "String",
+      "feel": "optional",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "method"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "URL",
+      "group": "input",
+      "type": "String",
+      "feel": "optional",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "url"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Payload",
+      "optional": false,
+      "group": "input",
+      "feel": "optional",
+      "type": "Text",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "payload"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Connection timeout",
+      "description": "Sets the timeout in seconds to establish a connection or 0 for an infinite timeout",
+      "group": "errors",
+      "type": "String",
+      "value": "20",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "connectionTimeoutInSeconds"
+      },
+      "optional": true,
+      "constraints": {
+        "notEmpty": false,
+        "pattern": {
+          "value": "^(=.+|[0-9]+|\\{\\{secrets\\..+\\}\\})$",
+          "message": "Must be a timeout in seconds (default value is 20 seconds) or a FEEL expression"
+        }
+      }
+    },
+    {
+      "label": "Result variable",
+      "description": "Name of variable to store the response in. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/#result-variable\" target=\"_blank\">documentation</a>",
+      "group": "output",
+      "type": "String",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "resultVariable"
+      }
+    },
+    {
+      "label": "Result expression",
+      "id": "resultExpressionGet",
+      "description": "Expression to map the response into process variables. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/#result-expression\" target=\"_blank\">documentation</a>",
+      "group": "output",
+      "type": "String",
+      "feel": "required",
+      "value": "={\n placeDetails: if response.body.placeDetails = null then false else response.body.placeDetails, \n invalidPlaceID: if response.body.error = null then false else true }",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "resultExpression"
+      }
+    },
+    {
+      "label": "Error expression",
+      "description": "Expression to handle errors. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/#bpmn-errors\" target=\"_blank\">documentation</a>",
+      "group": "errors",
+      "type": "Text",
+      "feel": "required",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "errorExpression"
+      }
+    }
+  ],
+  "icon": {
+    "contents": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAC3CAMAAAAGjUrGAAABC1BMVEX///8AH18QpawAHV4AHF4AGVwAAFDp7fMAGl36+/zP09wAD1hwf6Ftf6MBI2IAF1sAAFXb3uYAC1sAE1oeMGixu88zTH7AyNdCUn8AAE+mrsKAjarw8vYADFgAAFgAA1YSsrQJKmnl6O7X2+QAAEguQna3vcyWnrWMlK0QKmcAClQMgZYTuLcSnKcTvrvH6uxLtrvl9ven3uFcbZSfqsF5iqvGzdsZNW9NXIZsdpenq70kPXVQYYoTKGQ6SnlGU34ISHYNZocNdpEPiZuSkqoKU30AQ3NZXIRqzc0Aj5653+ITrLELXYNev8TY8PEVycGH0tV22tZJxMOu7epCdpKTws1bub6R0tUaP3pGRutXAAAK+0lEQVR4nO2d/XuaWhLHQw4qiAGFRFRAI0TQJE2ToqhR05fcdLe1SbN3797s//+XLIcDCGrUpjdrj3c+P+RpIvA4X+bMzHnt3h4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAuwOumWQowTVPnt/11/h/oOdPK562SvvzTUt5uu+U+6yOOyq7WVS1z+aW7Qq7kOYVKUxDYcttacAG+ZGstuSgrEoswnKQYxXrHdTxzV91Ft7xehSsKEmIYJBUHXvpj3upWikaGmYdVih3XLu2iKqbnlBUD6xFSHJqpz+1yUVoQhIAEbmBt64u/GqbX6xQTgmBDRTtxgVUwnlMEX6u4pa1999chpw5FmZ03tHE9uyI/UNAyMUJJmLRP0Y/u9ZrGEosb13GMyN+scBJfk05+mwb89eSdkbzUB4RafEllMbSmNGm2d8lPcvZ4SS4hLz+KJ+Z4oV3NwTKF/M4knrzWeS5QSJUoGbcn6zRhkDG2d0MU3R5Lz5orFML2oLZWBpMQ46a7C/VsqT1aYa3cJjbyQ3ZFypmhdLTclg36ebyhuMoBZIc0hqPW6gBLkGRZqlOffewBWhUmkBCWJwVuAzdhx23nJku5Jnq3tdpWhEja8d5vEE2Q5Oh7bqNLdZjNtQ+l1a8fNYkmTmeTaMK+17oVZURzlVLSDte9fTYsT4bKBpL48QT1RcZw6XUUazjh1r55okl+sEkiDm7w/Unpbdu0l2K54toiLOoW11rrL03chNrbNu5lLJUEIY7LZDIci6LwIQXdHefwRzRhOLG7bfNeguUyKTNFpJxWsw0fQ5D9n9lstSooGWQE3WJtbSNLk5kcbdvAH6fksglJRHRaLbKdDx8/nZ2d3d7e+j8/fbwbNVkje/KbX8fqG4bYGZKobtvEH8WXZJZbRana6N/d7k/PL87PjwPOMcf7b24/fca1vfUP4wc1YSTGW/81fiXMwqwswYrc3R5fnE+n+2mm02P/z/988DUZF/2WtFihsCuyUUaiamw2pyXsO83evfEF2X+Oy7d7e28vv3z6jLInp0hMSTIayytEUSiq3fhuMZJEZKvi7cX5s4JgvmJNzi8upmd3zeyJwMxkyVTy+ZPn69sMoqeHbM8k4aofji9WKrK//w5rgpvSxffj229s9UQRI1mEMe/Vl7SpSJQMLaLk43FXMVP9dr7aSXzuH4gmkSwfhJNsZHVjoOdcWcggBkUkRZH62zZ2M6x+PBCCst/85LKO6dtYEyLL9GO/Wg0LFqPl7eV6ZVGRJL/Wy/g/2URGYyfbtnYjzLEQfWPx9PN0rZcEjSehic/x9/OzD6dVKWhBCqv5RZ2udh3Nx+lq5QmKVeFa2zZ3E/R2I5ZEkb5sIsn+/dVDSpP9N9PvF1/uuGqQidli30mFDaswEokqiKWhcOPt6qy1yx+P17cczNer+4W/XVy8+cacBqpwxX4vNYeR01oi54cWZbA1Q38AK5EkFPHLBpJM9y/9bPzu8eldyNPj/f0l9pvzizd3zGkQnFhZqKTKVqwKYkY0DOGblUS/5fRuf7Uml5f3j09fH674xSGiq4e3j/eXv/stKHNKmkmjnRag1HMPaJhQ52fBxH+3wqeFaj52jstL3zEe1j3v4elfv599VoKgLVXoHJr2sonqQWLPlkoyvfzz8evbTUcPr/79+EdLwV1swV5/9a+H2U9O0SiHi+Fk6reWr1c/OJr68B93oqB4cowqeK2YrDGFz2/Smkz/fHxa21yWknMGHUkZU9UPJuSL6FlN/Abz9O7q5c8utW9Qk4ZiJE1ubg48ocnl/dPbnxAEw6vDzPX6y34xnEZKkiieTP0Ms3FEXYXZrtEWUKz6XJdeks6mfkx995cIgtGpWzXsCmlJkFD/4+ebDNWo2ZQiGaEzbqt/Z0H8EDhKlCZIUcqF2u6sPHsh3TjAIlZhBo5K0fDxK6FHc34oI/SH4CKYNqlgkSS0NJWG3urrowfDXr4iZcejZST9tdEMHFiNQTdPWwXxauhNxCjFcW1xe9LfF02RGoPd3G70UvROtgKKpCk0uzu7Ue+l1MBHFgBFAAAAAGAX0NWj2pG3a31IPTdDf/aTmGRZY/VGQtEwjKLccpfN9vGJZ+oU6ca7J9mYRqN54MVWu8Vqdo5qYheBNa4bUriCLyNU/7uwQDqn+Y+uZoNJ9KNeT6NGFf4gNZvBCtlBtDpiyCzAjiJN+K6YngaRqgdzRqtNPGYl4NMKTK/tdj1aSuc5TbAR0ZEVBZGZhx2FW/J1rU7GcoN1nmTeLJveicI7RTL6reJzILoOdZokF7FmGDLtHWrCJpBCTXQttJcTJ5OJyOAdlcLcMrV8mUyUBEuV7KMjehZdhJqIh53OYSdcmCiMgwFrosnkMEmL+IJTJ5Ic3hy0HUdzWxNW6sw9uFYnEnMj3BhNisbAiSbiuNb16Q3Ixi0SFwNNFPcoRTADZPfx2mBWHNTC5pBzRuyc0SU3WiTXqNHSaEICTVAn3KnHd4OZwSAuEk2KS7armQW874Kd9BKj/Wpt7iLbCDwJ4TVtlC3LIZqIWvS7g7fwSGVsRaCJrC3eY2NLEbvyBIIcnhXgWjcdrCtla9rmNVFxZORGqzTJaXLQqFZGCA8nYsNRK1LkdvQwr0l+LKU1Wdz/auFdxWj1zj4dJ2J0aOsF/HiOrg1vC35yg/2kFWtiaKUZJJuqfT8QS1Fpx5uJC+LHWmVfN2VY2uuKKEzH9DCnCd/G2UKqYOsCTdh+pRxRIfHWxmdOGVE0Md1WfEE5Mp238W4gzvHb0EDBfkdRJo40aRJNeLMbnGdiBBmF1Ccs2YKDd+EQ5fhrXK/J0blbpfdCJrog3tVm4kQcnC/ki4xoS8dhfeJ6qqra18Pg9AbEBbFivrZnD53gjmtcjBlR7jVnx32wk8hPPF8IJAS9PhurLFVoirJRbc9JkqTIZH9GgxyWFGoSb19jSRUT+Un4gNJ7hfMJNBGjgYEgEd+o5N9+dkd1mlbJRprM3AEZ70n4JJqInWZEn+SguXgybmHEpJ9YOBFL4yPsfPleE1eBLkWrORb6xRLrqqTxh7V9bQbRysN5J14zzqu2j1pGMz8JErGfictYrPJogis8jqL9GXHbwUiKwVXaUSVO6hNn4ZagPmE76eJ0wM40McnBU+SZHOlX0pSOQ03Cd+pq17PB1efrWLw0MD6hjVBh47bD23VmAbZPT5QN884QN33Vs5Kt/vn+Dj4iBYmpN1+Z+UlurCRDczguQ1E6DvvFSywnmjSW9YuHuMOT6bcTCib8JE96xE0xIjg/RCpT03jma/sEgSZCIfCgmKAgtYMj/qTD4RGpT3Netx/HWL2A18kd9mb32LiWpSgdr9OE7Q8qSYKQqzvBq0dKy9WcrtMeDoJkzjLYcUpckJaS1Xwbd3oUlxZHWacJru0TsORCXWODKo1TpE6/KSnk3BSlz0dD02zqgR4eMUACLUNLazVJEQ/I6e3wOEi/vI3GtuVghEHH45KZm1Sm5odYNLlHSZQlmjDLjk4bMmhBEyYST6+1GsnzD5GSHeLmwtewmwjDtPndEYebFiXpmD8oyrK89Di5A0NeQIkdirfao7qAzydj/VqvKI/tIAvp5bos1ztz2Up3/b/KJw4ljlLKY5a9QfLJHIkL9ZJ9UB75/aBR2e1a4SJKXsVXWfPh1CR3v5oVvw74fwwJSEytr3IFStwEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKjnf8dPGwXhYWK0AAAAAElFTkSuQmCC"
+  }
+}
